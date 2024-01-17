@@ -80,7 +80,7 @@ WSGI_APPLICATION = "bus_station.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "db_bus_station.sqlite3",
     }
 }
 

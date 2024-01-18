@@ -1,16 +1,9 @@
-from rest_framework import mixins, viewsets
+from rest_framework import viewsets
 
 from station.models import Bus
 from station.serializers import BusSerializer
 
 
-class BusViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
+class BusViewSet(viewsets.ModelViewSet):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer

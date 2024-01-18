@@ -6,7 +6,7 @@ from station.models import Bus
 class BusSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     info = serializers.CharField(required=False)
-    num_seats = serializers.IntegerField(required=True)
+    num_seats = serializers.IntegerField()
 
     def create(self, validated_data):
         return Bus.objects.create(**validated_data)

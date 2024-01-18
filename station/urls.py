@@ -1,10 +1,10 @@
 from django.urls import path
 
-from station.views import BusListView, BusDetailView
+from station.views import BusList, BusDetail
 
 urlpatterns = [
-    path("buses/", BusListView.as_view(), name="bus-list"),
-    path("buses/<int:pk>/", BusDetailView.as_view(), name="bus-detail"),
+    path("buses/", BusList.as_view(), name="bus-list"),
+    path("buses/<int:pk>/", BusDetail.as_view(), name="bus-detail"),
 ]
 
 app_name = "station"

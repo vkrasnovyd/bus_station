@@ -1,50 +1,50 @@
-from rest_framework.decorators import api_view
-from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
+from rest_framework.views import APIView
 
 from station.models import Bus
 from station.serializers import BusSerializer
 
 
-@api_view(["GET", "POST"])
-def bus_list(request):
-    if request.method == "GET":
+class BusListView(APIView):
+    def get(self, request):
         buses = Bus.objects.all()
         serializer = BusSerializer(buses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    if request.method == "POST":
+    def post(self, request):
         serializer = BusSerializer(data=request.data)
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET", "PUT", "PATCH", "DELETE"])
-def bus_detail(request, pk):
-    bus = get_object_or_404(Bus, id=pk)
+class BusDetailView(APIView):
+    def get_object(self, pk):
+        return generics.get_object_or_404(Bus, id=pk)
 
-    if request.method == "GET":
+    def get(self, request, pk):
+        bus = self.get_object(pk)
         serializer = BusSerializer(bus)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    if request.method == "PUT":
+    def put(self, request, pk):
+        bus = self.get_object(pk)
         serializer = BusSerializer(bus, data=request.data)
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    if request.method == "PATCH":
+    def patch(self, request, pk):
+        bus = self.get_object(pk)
         serializer = BusSerializer(bus, data=request.data, partial=True)
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    if request.method == "DELETE":
+    def delete(self, request, pk):
+        bus = self.get_object(pk)
         bus.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-

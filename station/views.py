@@ -22,7 +22,7 @@ def bus_list(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET", "PUT", "DELETE"])
+@api_view(["GET", "PUT", "PATCH", "DELETE"])
 def bus_detail(request, pk):
     bus = get_object_or_404(Bus, id=pk)
 
@@ -32,6 +32,13 @@ def bus_detail(request, pk):
 
     if request.method == "PUT":
         serializer = BusSerializer(bus, data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    if request.method == "PATCH":
+        serializer = BusSerializer(bus, data=request.data, partial=True)
 
         serializer.is_valid(raise_exception=True)
         serializer.save()

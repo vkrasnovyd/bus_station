@@ -7,5 +7,5 @@ class BusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bus
-        fields = "__all__"
+        fields = ("id", "info", "num_seats", "is_mini")
         read_only_fields = ("id",)

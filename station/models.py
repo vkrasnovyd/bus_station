@@ -8,5 +8,9 @@ class Bus(models.Model):
     class Meta:
         verbose_name_plural = "buses"
 
+    @property
+    def is_mini(self):
+        return self.num_seats <= 10
+
     def __str__(self):
-        return str(self.info)
+        return self.info

@@ -1,14 +1,23 @@
 from rest_framework import serializers
 
-from station.models import Bus, Trip
+from station.models import Bus, Trip, Facility
+
+
+class FacilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Facility
+        fields = ("id", "name")
 
 
 class BusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bus
-        fields = ("id", "info", "num_seats", "is_mini")
-        read_only_fields = ("id",)
+        fields = ("id", "info", "num_seats", "is_mini", "facilities")
+
+
+class BusListSerializer(BusSerializer):
+    facilities = FacilitySerializer(many=True, read_only=True)
 
 
 class TripSerializer(serializers.ModelSerializer):

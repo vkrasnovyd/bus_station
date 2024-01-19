@@ -4,6 +4,7 @@ from station.models import Bus, Trip, Facility
 from station.serializers import (
     BusSerializer,
     BusListSerializer,
+    BusDetailSerializer,
     TripSerializer,
     TripListSerializer,
     FacilitySerializer,
@@ -17,7 +18,7 @@ class BusViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
 
-        if self.action == "list":
+        if self.action in ("list", "retrieve"):
             return queryset.prefetch_related("facilities")
 
         return queryset
@@ -25,6 +26,9 @@ class BusViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return BusListSerializer
+
+        if self.action == "retrieve":
+            return BusDetailSerializer
 
         return self.serializer_class
 

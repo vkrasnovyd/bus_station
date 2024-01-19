@@ -1,11 +1,12 @@
 from rest_framework import viewsets
 
-from station.models import Bus, Trip
+from station.models import Bus, Trip, Facility
 from station.serializers import (
     BusSerializer,
     BusListSerializer,
     TripSerializer,
     TripListSerializer,
+    FacilitySerializer,
 )
 
 
@@ -45,3 +46,8 @@ class TripViewSet(viewsets.ModelViewSet):
             return TripListSerializer
 
         return TripSerializer
+
+
+class FacilityViewSet(viewsets.ModelViewSet):
+    queryset = Facility.objects.all()
+    serializer_class = FacilitySerializer

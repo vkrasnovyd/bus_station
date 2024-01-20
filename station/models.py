@@ -62,11 +62,19 @@ class Ticket(models.Model):
     def __str__(self):
         return f"{self.trip} - (seat: {self.seat})"
 
-    def clean(self):
-        if not (1 <= self.seat <= self.trip.bus.num_seats):
-            raise ValidationError({
-                "seat": f"seat must be in range [1, {self.trip.bus.num_seats}]"
+    @staticmethod
+    def validate_seat(seat: int, num_seats: int, error_to_raise):
+        if not (1 <= seat <= num_seats):
+            raise error_to_raise({
+                "seat": f"seat must be in range [1, {num_seats}], not {seat}"
             })
+
+    def clean(self):
+        Ticket.validate_seat(
+            seat=self.seat,
+            num_seats=self.trip.bus.num_seats,
+            error_to_raise=ValidationError
+        )
 
     def save(
         self,

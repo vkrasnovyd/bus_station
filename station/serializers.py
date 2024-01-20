@@ -57,6 +57,16 @@ class TripDetailSerializer(TripSerializer):
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        data = super(TicketSerializer, self).validate(attrs)
+
+        Ticket.validate_seat(
+            seat=attrs["seat"],
+            num_seats=attrs["trip"].bus.num_seats,
+            error_to_raise=serializers.ValidationError
+        )
+
+        return data
 
     class Meta:
         model = Ticket

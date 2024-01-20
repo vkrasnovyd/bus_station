@@ -1,16 +1,12 @@
-from django.urls import path, include
-
 from rest_framework import routers
 
 from station.views import BusViewSet, TripViewSet, FacilityViewSet
 
 router = routers.DefaultRouter()
-router.register("buses", BusViewSet)
-router.register("trips", TripViewSet)
-router.register("facilities", FacilityViewSet)
+router.register("buses", BusViewSet, basename="bus")
+router.register("trips", TripViewSet, basename="trip")
+router.register("facilities", FacilityViewSet, basename="facility")
 
-urlpatterns = [
-    path("", include(router.urls)),
-]
+urlpatterns = router.urls
 
 app_name = "station"

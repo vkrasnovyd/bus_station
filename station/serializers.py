@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from station.models import Bus, Trip, Facility, Ticket, Order
 
@@ -60,6 +61,11 @@ class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticket
         fields = ("id", "seat", "trip")
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Ticket.objects.all(), fields=["seat", "trip"]
+            )
+        ]
 
 
 class OrderSerializer(serializers.ModelSerializer):

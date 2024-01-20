@@ -35,7 +35,9 @@ class Trip(models.Model):
     source = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
     departure = models.DateTimeField()
-    bus = models.ForeignKey("Bus", on_delete=models.CASCADE)
+    bus = models.ForeignKey(
+        "Bus", on_delete=models.CASCADE, related_name="trips"
+    )
 
     def __str__(self):
         return f"{self.source} - {self.destination} ({self.departure})"
@@ -43,8 +45,12 @@ class Trip(models.Model):
 
 class Ticket(models.Model):
     seat = models.IntegerField()
-    trip = models.ForeignKey("Trip", on_delete=models.CASCADE)
-    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+    trip = models.ForeignKey(
+        "Trip", on_delete=models.CASCADE, related_name="tickets"
+    )
+    order = models.ForeignKey(
+        "Order", on_delete=models.CASCADE, related_name="tickets"
+    )
 
     class Meta:
         constraints = [UniqueConstraint(

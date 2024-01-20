@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from station.models import Bus, Trip, Facility
+from station.models import Bus, Trip, Facility, Ticket, Order
 
 
 class FacilitySerializer(serializers.ModelSerializer):
@@ -52,3 +52,25 @@ class TripListSerializer(TripSerializer):
 
 class TripDetailSerializer(TripSerializer):
     bus = BusDetailSerializer(many=False, read_only=True)
+
+
+class TicketSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "seat", "trip")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
+
+    class Meta:
+        model = Order
+        fields = ("id", "tickets", "created_at")
+
+    def create(self, validated_data):
+        tickets_data = validated_data.pop("tickets")
+        order = Order.objects.create(**validated_data)
+        for ticket_data in tickets_data:
+            Ticket.objects.create(order=order, **ticket_data)
+        return order

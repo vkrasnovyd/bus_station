@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-from station.models import Bus, Trip, Facility
+from station.models import Bus, Trip, Facility, Order
 from station.serializers import (
     BusSerializer,
     BusListSerializer,
@@ -9,6 +9,7 @@ from station.serializers import (
     TripListSerializer,
     TripDetailSerializer,
     FacilitySerializer,
+    OrderSerializer,
 )
 
 
@@ -59,3 +60,14 @@ class TripViewSet(viewsets.ModelViewSet):
 class FacilityViewSet(viewsets.ModelViewSet):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

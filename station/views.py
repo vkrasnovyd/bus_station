@@ -17,8 +17,19 @@ class BusViewSet(viewsets.ModelViewSet):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
 
+    @staticmethod
+    def _params_to_ints(qs):
+        return [int(param_id) for param_id in qs.split(",")]
+
     def get_queryset(self):
         queryset = self.queryset
+
+        facilities = self.request.query_params.get("facilities")
+        if facilities:
+            facilities_ids = self._params_to_ints(facilities)
+            queryset = queryset.filter(
+                facilities__id__in=facilities_ids
+            ).distinct()
 
         if self.action in ("list", "retrieve"):
             return queryset.prefetch_related("facilities")

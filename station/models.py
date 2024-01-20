@@ -58,6 +58,7 @@ class Ticket(models.Model):
                 name="unique_ticket_seat_trip"
             )
         ]
+        ordering = ["trip", "seat"]
 
     def __str__(self):
         return f"{self.trip} - (seat: {self.seat})"

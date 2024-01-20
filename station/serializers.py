@@ -52,10 +52,6 @@ class TripListSerializer(TripSerializer):
         fields = ("id", "source", "destination", "departure", "bus_info", "bus_num_seats")
 
 
-class TripDetailSerializer(TripSerializer):
-    bus = BusDetailSerializer(many=False, read_only=True)
-
-
 class TicketSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         data = super(TicketSerializer, self).validate(attrs)
@@ -76,6 +72,27 @@ class TicketSerializer(serializers.ModelSerializer):
                 queryset=Ticket.objects.all(), fields=["seat", "trip"]
             )
         ]
+
+
+class TripDetailSerializer(TripSerializer):
+    bus = BusDetailSerializer(many=False, read_only=True)
+    taken_seats = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        source="tickets",
+        slug_field="seat"
+    )
+
+    class Meta:
+        model = Trip
+        fields = (
+            "id",
+            "source",
+            "destination",
+            "departure",
+            "bus",
+            "taken_seats",
+        )
 
 
 class OrderSerializer(serializers.ModelSerializer):

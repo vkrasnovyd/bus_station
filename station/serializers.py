@@ -83,6 +83,10 @@ class TicketSerializer(serializers.ModelSerializer):
         ]
 
 
+class TicketListSerializer(TicketSerializer):
+    trip = TripListSerializer(many=False, read_only=True)
+
+
 class TripDetailSerializer(TripSerializer):
     bus = BusDetailSerializer(many=False, read_only=True)
     tickets_available = serializers.IntegerField(read_only=True)
@@ -120,3 +124,7 @@ class OrderSerializer(serializers.ModelSerializer):
             for ticket_data in tickets_data:
                 Ticket.objects.create(order=order, **ticket_data)
             return order
+
+
+class OrderListSerializer(OrderSerializer):
+    tickets = TicketListSerializer(many=True, read_only=True)

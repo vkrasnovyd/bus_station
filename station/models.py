@@ -6,7 +6,7 @@ from bus_station import settings
 
 
 class Facility(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     class Meta:
         verbose_name_plural = "facilities"
@@ -35,7 +35,9 @@ class Trip(models.Model):
     source = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
     departure = models.DateTimeField()
-    bus = models.ForeignKey("Bus", on_delete=models.CASCADE)
+    bus = models.ForeignKey(
+        "Bus", on_delete=models.CASCADE, related_name="trips"
+    )
 
     def __str__(self):
         return f"{self.source} - {self.destination} ({self.departure})"
@@ -43,8 +45,12 @@ class Trip(models.Model):
 
 class Ticket(models.Model):
     seat = models.IntegerField()
-    trip = models.ForeignKey("Trip", on_delete=models.CASCADE)
-    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+    trip = models.ForeignKey(
+        "Trip", on_delete=models.CASCADE, related_name="tickets"
+    )
+    order = models.ForeignKey(
+        "Order", on_delete=models.CASCADE, related_name="tickets"
+    )
 
     class Meta:
         constraints = [UniqueConstraint(
@@ -52,15 +58,24 @@ class Ticket(models.Model):
                 name="unique_ticket_seat_trip"
             )
         ]
+        ordering = ["trip", "seat"]
 
     def __str__(self):
         return f"{self.trip} - (seat: {self.seat})"
 
-    def clean(self):
-        if not (1 <= self.seat <= self.trip.bus.num_seats):
-            raise ValidationError({
-                "seat": f"seat must be in range [1, {self.trip.bus.num_seats}]"
+    @staticmethod
+    def validate_seat(seat: int, num_seats: int, error_to_raise):
+        if not (1 <= seat <= num_seats):
+            raise error_to_raise({
+                "seat": f"seat must be in range [1, {num_seats}], not {seat}"
             })
+
+    def clean(self):
+        Ticket.validate_seat(
+            seat=self.seat,
+            num_seats=self.trip.bus.num_seats,
+            error_to_raise=ValidationError
+        )
 
     def save(
         self,

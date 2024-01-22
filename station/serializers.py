@@ -12,7 +12,6 @@ class FacilitySerializer(serializers.ModelSerializer):
 
 
 class BusSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Bus
         fields = ("id", "info", "num_seats", "is_mini", "facilities")
@@ -20,9 +19,7 @@ class BusSerializer(serializers.ModelSerializer):
 
 class BusListSerializer(BusSerializer):
     facilities = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field="name"
+        many=True, read_only=True, slug_field="name"
     )
 
 
@@ -31,20 +28,15 @@ class BusDetailSerializer(BusSerializer):
 
 
 class TripSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Trip
         fields = ("id", "source", "destination", "departure", "bus")
 
 
 class TripListSerializer(TripSerializer):
-    bus_info = serializers.CharField(
-        source="bus.info",
-        read_only=True
-    )
+    bus_info = serializers.CharField(source="bus.info", read_only=True)
     bus_num_seats = serializers.IntegerField(
-        source="bus.num_seats",
-        read_only=True
+        source="bus.num_seats", read_only=True
     )
     tickets_available = serializers.IntegerField(read_only=True)
 
@@ -57,7 +49,7 @@ class TripListSerializer(TripSerializer):
             "departure",
             "bus_info",
             "bus_num_seats",
-            "tickets_available"
+            "tickets_available",
         )
 
 
@@ -68,7 +60,7 @@ class TicketSerializer(serializers.ModelSerializer):
         Ticket.validate_seat(
             seat=attrs["seat"],
             num_seats=attrs["trip"].bus.num_seats,
-            error_to_raise=serializers.ValidationError
+            error_to_raise=serializers.ValidationError,
         )
 
         return data
@@ -91,10 +83,7 @@ class TripDetailSerializer(TripSerializer):
     bus = BusDetailSerializer(many=False, read_only=True)
     tickets_available = serializers.IntegerField(read_only=True)
     taken_seats = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        source="tickets",
-        slug_field="seat"
+        many=True, read_only=True, source="tickets", slug_field="seat"
     )
 
     class Meta:

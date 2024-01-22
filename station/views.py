@@ -34,9 +34,9 @@ class BusViewSet(viewsets.ModelViewSet):
         facilities = self.request.query_params.get("facilities")
         if facilities:
             facilities_ids = self._params_to_ints(facilities)
-            queryset = queryset.filter(
-                facilities__id__in=facilities_ids
-            ).distinct()
+            queryset = (
+                queryset.filter(facilities__id__in=facilities_ids).distinct()
+            )
 
         if self.action in ("list", "retrieve"):
             return queryset.prefetch_related("facilities")
@@ -63,10 +63,8 @@ class TripViewSet(viewsets.ModelViewSet):
         queryset = self.queryset
 
         if self.action in ("list", "retrieve"):
-            queryset = (
-                queryset
-                .select_related("bus")
-                .annotate(tickets_available=F("bus__num_seats") - Count("tickets"))
+            queryset = queryset.select_related("bus").annotate(
+                tickets_available=F("bus__num_seats") - Count("tickets")
             )
 
         return queryset

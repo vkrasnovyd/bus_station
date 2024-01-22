@@ -53,9 +53,9 @@ class Ticket(models.Model):
     )
 
     class Meta:
-        constraints = [UniqueConstraint(
-                fields=["seat", "trip"],
-                name="unique_ticket_seat_trip"
+        constraints = [
+            UniqueConstraint(
+                fields=["seat", "trip"], name="unique_ticket_seat_trip"
             )
         ]
         ordering = ["trip", "seat"]
@@ -66,38 +66,34 @@ class Ticket(models.Model):
     @staticmethod
     def validate_seat(seat: int, num_seats: int, error_to_raise):
         if not (1 <= seat <= num_seats):
-            raise error_to_raise({
-                "seat": f"seat must be in range [1, {num_seats}], not {seat}"
-            })
+            raise error_to_raise(
+                {"seat": f"seat must be in range [1, {num_seats}], not {seat}"}
+            )
 
     def clean(self):
         Ticket.validate_seat(
             seat=self.seat,
             num_seats=self.trip.bus.num_seats,
-            error_to_raise=ValidationError
+            error_to_raise=ValidationError,
         )
 
     def save(
-        self,
-        force_insert=False,
-        force_update=False,
-        using=None,
-        update_fields=None
+            self,
+            force_insert=False,
+            force_update=False,
+            using=None,
+            update_fields=None
     ):
         self.full_clean()
         return super(Ticket, self).save(
-            force_insert,
-            force_update,
-            using,
-            update_fields
+            force_insert, force_update, using, update_fields
         )
 
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
 
     class Meta:

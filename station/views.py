@@ -1,8 +1,10 @@
 from django.db.models import Count, F
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 
 from station.models import Bus, Trip, Facility, Order
+from station.permissions import IsAdminOrIFAuthenticatedReadOnly
 from station.serializers import (
     BusSerializer,
     BusListSerializer,
@@ -19,6 +21,8 @@ from station.serializers import (
 class BusViewSet(viewsets.ModelViewSet):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     @staticmethod
     def _params_to_ints(qs):
@@ -30,9 +34,9 @@ class BusViewSet(viewsets.ModelViewSet):
         facilities = self.request.query_params.get("facilities")
         if facilities:
             facilities_ids = self._params_to_ints(facilities)
-            queryset = queryset.filter(
-                facilities__id__in=facilities_ids
-            ).distinct()
+            queryset = (
+                queryset.filter(facilities__id__in=facilities_ids).distinct()
+            )
 
         if self.action in ("list", "retrieve"):
             return queryset.prefetch_related("facilities")
@@ -52,15 +56,15 @@ class BusViewSet(viewsets.ModelViewSet):
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     def get_queryset(self):
         queryset = self.queryset
 
         if self.action in ("list", "retrieve"):
-            queryset = (
-                queryset
-                .select_related("bus")
-                .annotate(tickets_available=F("bus__num_seats") - Count("tickets"))
+            queryset = queryset.select_related("bus").annotate(
+                tickets_available=F("bus__num_seats") - Count("tickets")
             )
 
         return queryset
@@ -78,6 +82,8 @@ class TripViewSet(viewsets.ModelViewSet):
 class FacilityViewSet(viewsets.ModelViewSet):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
 
 class OrderPagination(PageNumberPagination):
@@ -90,6 +96,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)

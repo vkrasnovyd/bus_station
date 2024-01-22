@@ -56,6 +56,8 @@ class BusViewSet(viewsets.ModelViewSet):
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -82,6 +84,8 @@ class TripViewSet(viewsets.ModelViewSet):
 class FacilityViewSet(viewsets.ModelViewSet):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
 
 class OrderPagination(PageNumberPagination):
@@ -94,6 +98,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     def get_queryset(self):
         queryset = self.queryset.filter(user=self.request.user)

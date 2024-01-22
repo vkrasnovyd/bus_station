@@ -1,6 +1,8 @@
 from django.db.models import Count, F
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from station.models import Bus, Trip, Facility, Order
 from station.serializers import (
@@ -19,6 +21,14 @@ from station.serializers import (
 class BusViewSet(viewsets.ModelViewSet):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "delete"):
+            return [IsAdminUser()]
+
+        return super().get_permissions()
 
     @staticmethod
     def _params_to_ints(qs):

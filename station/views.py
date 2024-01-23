@@ -1,8 +1,10 @@
 from django.db.models import Count, F
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.response import Response
 
 from station.models import Bus, Trip, Facility, Order
 from station.permissions import IsAdminOrIFAuthenticatedReadOnly
@@ -10,6 +12,7 @@ from station.serializers import (
     BusSerializer,
     BusListSerializer,
     BusDetailSerializer,
+    BusImageSerializer,
     TripSerializer,
     TripListSerializer,
     TripDetailSerializer,
@@ -55,7 +58,25 @@ class BusViewSet(
         if self.action == "retrieve":
             return BusDetailSerializer
 
+        if self.action == "upload_image":
+            return BusImageSerializer
+
         return self.serializer_class
+
+    @action(
+        methods=["POST"],
+        detail=True,
+        url_path="upload-image",
+        permission_classes=[IsAdminUser],
+    )
+    def upload_image(self, request, pk=None):
+        """Endpoint for uploading picture to specific bus"""
+        bus = self.get_object()
+        serializer = self.get_serializer(bus, data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TripViewSet(viewsets.ModelViewSet):

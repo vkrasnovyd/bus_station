@@ -1,5 +1,9 @@
+import os
+import uuid
+
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.utils.text import slugify
 from rest_framework.exceptions import ValidationError
 
 from bus_station import settings
@@ -15,10 +19,19 @@ class Facility(models.Model):
         return self.name
 
 
+def bus_image_file_path(instance, filename) -> str:
+    _, extension = os.path.splitext(filename)
+
+    filename = f"{slugify(instance.info)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/buses/", filename)
+
+
 class Bus(models.Model):
     info = models.CharField(max_length=255, null=True)
     num_seats = models.IntegerField()
     facilities = models.ManyToManyField(Facility, related_name="buses")
+    image = models.ImageField(null=True, upload_to=bus_image_file_path)
 
     class Meta:
         verbose_name_plural = "buses"

@@ -1,5 +1,5 @@
 from django.db.models import Count, F
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -19,7 +19,11 @@ from station.serializers import (
 )
 
 
-class BusViewSet(viewsets.ModelViewSet):
+class BusViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
     authentication_classes = (TokenAuthentication,)
@@ -80,7 +84,11 @@ class TripViewSet(viewsets.ModelViewSet):
         return TripSerializer
 
 
-class FacilityViewSet(viewsets.ModelViewSet):
+class FacilityViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
     authentication_classes = (TokenAuthentication,)
@@ -93,7 +101,12 @@ class OrderPagination(PageNumberPagination):
     max_page_size = 50
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination

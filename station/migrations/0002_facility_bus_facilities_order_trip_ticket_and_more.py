@@ -33,7 +33,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="bus",
             name="facilities",
-            field=models.ManyToManyField(related_name="buses", to="station.facility"),
+            field=models.ManyToManyField(
+                related_name="buses", to="station.facility"
+            ),
         ),
         migrations.CreateModel(
             name="Order",
@@ -78,7 +80,8 @@ class Migration(migrations.Migration):
                 (
                     "bus",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="station.bus"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="station.bus",
                     ),
                 ),
             ],
@@ -99,13 +102,15 @@ class Migration(migrations.Migration):
                 (
                     "order",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="station.order"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="station.order",
                     ),
                 ),
                 (
                     "trip",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="station.trip"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="station.trip",
                     ),
                 ),
             ],

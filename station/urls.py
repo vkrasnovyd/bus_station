@@ -4,7 +4,7 @@ from station.views import (
     BusViewSet,
     TripViewSet,
     FacilityViewSet,
-    OrderViewSet
+    OrderViewSet,
 )
 
 router = routers.DefaultRouter()

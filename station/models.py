@@ -30,7 +30,9 @@ def bus_image_file_path(instance, filename) -> str:
 class Bus(models.Model):
     info = models.CharField(max_length=255, null=True)
     num_seats = models.IntegerField()
-    facilities = models.ManyToManyField(Facility, related_name="buses")
+    facilities = models.ManyToManyField(
+        Facility, related_name="buses", blank=True
+    )
     image = models.ImageField(null=True, upload_to=bus_image_file_path)
 
     class Meta:
@@ -91,11 +93,11 @@ class Ticket(models.Model):
         )
 
     def save(
-            self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
     ):
         self.full_clean()
         return super(Ticket, self).save(

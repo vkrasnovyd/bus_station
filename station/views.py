@@ -23,7 +23,10 @@ from station.serializers import (
 
 
 class BusViewSet(
-    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
 ):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer

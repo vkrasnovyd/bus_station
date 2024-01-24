@@ -23,9 +23,7 @@ from station.serializers import (
 
 
 class BusViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
 ):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
@@ -42,9 +40,9 @@ class BusViewSet(
         facilities = self.request.query_params.get("facilities")
         if facilities:
             facilities_ids = self._params_to_ints(facilities)
-            queryset = (
-                queryset.filter(facilities__id__in=facilities_ids).distinct()
-            )
+            queryset = queryset.filter(
+                facilities__id__in=facilities_ids
+            ).distinct()
 
         if self.action in ("list", "retrieve"):
             return queryset.prefetch_related("facilities")
@@ -106,9 +104,7 @@ class TripViewSet(viewsets.ModelViewSet):
 
 
 class FacilityViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
 ):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
@@ -126,7 +122,7 @@ class OrderViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

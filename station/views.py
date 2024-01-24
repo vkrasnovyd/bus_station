@@ -1,7 +1,6 @@
 from django.db.models import Count, F
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import viewsets, mixins, status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -28,7 +27,6 @@ class BusViewSet(
 ):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     @staticmethod
@@ -76,7 +74,7 @@ class BusViewSet(
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     # Only for documentation purposes
     @extend_schema(
         parameters=[
@@ -94,7 +92,6 @@ class BusViewSet(
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
     def get_queryset(self):
@@ -122,7 +119,6 @@ class FacilityViewSet(
 ):
     queryset = Facility.objects.all()
     serializer_class = FacilitySerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIFAuthenticatedReadOnly,)
 
 
@@ -141,7 +137,6 @@ class OrderViewSet(
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
